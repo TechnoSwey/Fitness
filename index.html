@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitalFit | Персональный фитнес-тренер</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --primary: #00B894;
+            --secondary: #0984E3;
+            --accent: #FD79A8;
+            --dark: #2D3436;
+            --light: #F9F9F9;
+            --gray: #636E72;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Навигация */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(249, 249, 249, 0.95);
+            backdrop-filter: blur(10px);
+            transition: padding 0.3s, box-shadow 0.3s;
+        }
+
+        nav.scrolled {
+            padding: 15px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            bottom: -5px;
+            left: 0;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Герой-секция */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.8rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .hero h1 span {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-bottom: 40px;
+            line-height: 1.7;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .stat-item h3 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-item p {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 0;
+        }
+
+        .hero-visual {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 600px;
+            height: 600px;
+            z-index: 1;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(0, 184, 148, 0.1), rgba(9, 132, 227, 0.1));
+        }
+
+        .circle-1 {
+            width: 500px;
+            height: 500px;
+            top: 50px;
+            right: 0;
+        }
+
+        .circle-2 {
+            width: 300px;
+            height: 300px;
+            bottom: 50px;
+            right: 150px;
+            background: linear-gradient(45deg, rgba(253, 121, 168, 0.1), rgba(0, 184, 148, 0.1));
+        }
+
+        .floating-img {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 30px;
+            top: 50%;
+            right: 100px;
+            transform: translateY(-50%);
+            box-shadow: 0 30px 60px rgba(0, 184, 148, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 10rem;
+            z-index: 2;
+        }
+
+        /* Особенности */
+        .features {
+            padding: 100px 0;
+            background-color: white;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            color: var(--dark);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--light);
+            border-radius: 20px;
+            padding: 40px 30px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        /* Программы */
+        .programs {
+            padding: 100px 0;
+        }
+
+        .programs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .program-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .program-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .program-header {
+            height: 200px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 4rem;
+        }
+
+        .program-content {
+            padding: 30px;
+        }
+
+        .program-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .program-content p {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .program-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .program-features li {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .program-features i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        /* Призыв к действию */
+        .cta-section {
+            padding: 100px 0;
+            background: linear-gradient(45deg, var(--dark), #1a1a1a);
+            color: white;
+            text-align: center;
+            border-radius: 0 0 40px 40px;
+            margin-bottom: 100px;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            color: #B2BEC3;
+        }
+
+        /* Футер */
+        footer {
+            padding: 60px 0 30px;
+            background-color: var(--dark);
+            color: white;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 2px;
+            background-color: var(--primary);
+            bottom: 0;
+            left: 0;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #B2BEC3;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .social-icons a:hover {
+            background-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #636E72;
+            font-size: 0.9rem;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1100px) {
+            .hero-visual {
+                display: none;
+            }
+            
+            .hero-content {
+                max-width: 100%;
+                text-align: center;
+            }
+            
+            .hero-stats {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav id="navbar">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-dumbbell"></i> VitalFit
+            </div>
+            <div class="nav-links">
+                <a href="#home">Главная</a>
+                <a href="#features">Особенности</a>
+                <a href="#programs">Программы</a>
+                <a href="#coaches">Тренеры</a>
+                <a href="#pricing">Цены</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-outline">Войти</button>
+                <button class="btn btn-primary">Начать бесплатно</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Герой-секция -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Преобразуйте своё тело, <span>измените жизнь</span></h1>
+                <p>VitalFit — это персональный фитнес-тренер в вашем кармане. Персонализированные тренировки, отслеживание прогресса и поддержка сообщества помогут вам достичь своих фитнес-целей быстрее, чем когда-либо.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" style="margin-right: 15px;">
+                        <i class="fas fa-play-circle"></i> Начать тренировку
+                    </button>
+                    <button class="btn btn-outline">
+                        <i class="fas fa-video"></i> Посмотреть демо
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <h3>50K+</h3>
+                        <p>Довольных пользователей</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>500+</h3>
+                        <p>Тренировочных программ</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>24/7</h3>
+                        <p>Поддержка тренеров</p>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="circle circle-1"></div>
+                <div class="circle circle-2"></div>
+                <div class="floating-img">
+                    <i class="fas fa-running"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Особенности -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Почему выбирают VitalFit</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Искусственный интеллект</h3>
+                    <p>Наш ИИ анализирует ваши результаты и адаптирует тренировки под ваш прогресс, цели и возможности для максимальной эффективности.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Детальная аналитика</h3>
+                    <p>Отслеживайте прогресс с помощью детальной статистики, графиков и отчётов. Видите свой рост и мотивируйтесь результатами.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Сообщество</h3>
+                    <p>Присоединяйтесь к активному сообществу единомышленников, делитесь успехами, участвуйте в челленджах и получайте поддержку.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Программы -->
+    <section class="programs" id="programs">
+        <div class="container">
+            <h2 class="section-title">Популярные программы</h2>
+            <div class="programs-grid">
+                <div class="program-card">
+                    <div class="program-header" style="background: linear-gradient(45deg, #00B894, #00CEC9);">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="program-content">
+                        <h3>Похудение и тонус</h3>
+                        <p>12-недельная программа для снижения веса и укрепления мышц. Идеально для начинающих.</p>
+                        <ul class="program-features">
+                            <li><i class="fas fa-check"></i> Кардио и силовые тренировки</li>
+                            <li><i class="fas fa-check"></i> План питания</li>
+                            <li><i class="fas fa-check"></i> Ежедневные челленджи</li>
+                            <li><i class="fas fa-check"></i> Поддержка тренера</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;">Выбрать программу</button>
+                    </div>
+                </div>
+                <div class="program-card">
+                    <div class="program-header" style="background: linear-gradient(45deg, #0984E3, #6C5CE7);">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div class="program-content">
+                        <h3>Набор мышечной массы</h3>
+                        <p>Интенсивная программа для опытных атлетов, направленная на рост силы и мышечной массы.</p>
+                        <ul class="program-features">
+                            <li><i class="fas fa-check"></i> Прогрессивные перегрузки</li>
+                            <li><i class="fas fa-check"></i> План питания для набора массы</li>
+                            <li><i class="fas fa-check"></i> Техника выполнения упражнений</li>
+                            <li><i class="fas fa-check"></i> Отслеживание прогресса</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;">Выбрать программу</button>
+                    </div>
+                </div>
+                <div class="program-card">
+                    <div class="program-header" style="background: linear-gradient(45deg, #FD79A8, #E84393);">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="program-content">
+                        <h3>Здоровье и подвижность</h3>
+                        <p>Программа для улучшения осанки, гибкости и общего состояния здоровья. Без интенсивных нагрузок.</p>
+                        <ul class="program-features">
+                            <li><i class="fas fa-check"></i> Йога и стретчинг</li>
+                            <li><i class="fas fa-check"></i> Дыхательные практики</li>
+                            <li><i class="fas fa-check"></i> Упражнения для осанки</li>
+                            <li><i class="fas fa-check"></i> Медитации</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;">Выбрать программу</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Призыв к действию -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Начните свой фитнес-путь сегодня</h2>
+            <p>Присоединяйтесь к более чем 50 000 пользователей, которые уже изменили свои жизни с помощью VitalFit. Первые 7 дней — бесплатно.</p>
+            <button class="btn btn-primary" style="background: white; color: var(--dark); font-size: 1.1rem; padding: 15px 40px;">
+                <i class="fas fa-rocket"></i> Начать бесплатный trial
+            </button>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>VitalFit</h3>
+                    <p>Ваш персональный фитнес-тренер. Мы помогаем людям становиться здоровее, сильнее и увереннее в себе.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Продукт</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Особенности</a></li>
+                        <li><a href="#">Программы тренировок</a></li>
+                        <li><a href="#">Питание</a></li>
+                        <li><a href="#">Для тренеров</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Компания</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">О нас</a></li>
+                        <li><a href="#">Карьера</a></li>
+                        <li><a href="#">Блог</a></li>
+                        <li><a href="#">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Поддержка</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Центр помощи</a></li>
+                        <li><a href="#">Сообщество</a></li>
+                        <li><a href="#">Связаться с нами</a></li>
+                        <li><a href="#">Статус системы</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                © 2023 VitalFit. Все права защищены.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Изменение навигации при скролле
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Анимация появления элементов
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Анимация для карточек особенностей
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s, transform 0.6s';
+            observer.observe(card);
+        });
+        
+        // Анимация для карточек программ
+        document.querySelectorAll('.program-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s, transform 0.6s';
+            observer.observe(card);
+        });
+        
+        // Обработка кнопок
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            button.addEventListener('click', function() {
+                // Анимация нажатия
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+                
+                // Показываем сообщение
+                showMessage('Отличный выбор! Скоро вы будете перенаправлены...');
+            });
+        });
+        
+        function showMessage(text) {
+            const message = document.createElement('div');
+            message.textContent = text;
+            message.style.cssText = `
+                position: fixed;
+                top: 100px;
+                left: 50%;
+                transform: translateX(-50%) translateY(-20px);
+                background-color: var(--primary);
+                color: white;
+                padding: 15px 30px;
+                border-radius: 50px;
+                box-shadow: 0 10px 25px rgba(0, 184, 148, 0.3);
+                z-index: 10000;
+                opacity: 0;
+                transition: transform 0.3s, opacity 0.3s;
+                font-weight: 500;
+            `;
+            
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                message.style.transform = 'translateX(-50%) translateY(0)';
+                message.style.opacity = '1';
+            }, 10);
+            
+            setTimeout(() => {
+                message.style.transform = 'translateX(-50%) translateY(-20px)';
+                message.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(message);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Плавная прокрутка
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
